@@ -15,6 +15,22 @@ function getMousePos(canvas, evt) {
     };
 }
 
+function highlightPoint(canvas, x, y) {
+    "use strict";
+    var ctx = canvas.getContext('2d');
+    var proximity = 0.4, grid = 25;
+    
+    if ((x % grid < (proximity * grid) || x % grid > (grid - proximity * grid)) && ( y % grid > (proximity * grid) || y % grid < (grid - proximity * grid))) {
+        x = Math.floor(x / grid) * grid + Math.round(x % grid / grid) * grid;
+        y = Math.floor(y / grid) * grid + Math.round(y % grid / grid) * grid;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.lineWidth = 5;
+        ctx.stroke();
+        ctx.closePath();
+    }
+}
+
 function drawGrid(canvas) {
     "use strict";
     var major = {'spacing': 50, 'strokeStyle': '#000000'};
@@ -39,14 +55,12 @@ function drawGrid(canvas) {
         drawGridLine(0, rect.width, y, y, strokeStyle, canvas);
     };
     var drawGridLines = function (gridLines, canvas) {
-        console.log(gridLines);
         var ctx = canvas.getContext('2d');
         var rect = canvas.getBoundingClientRect();
         var x = 0, y = 0;
         while (x < rect.width) {
             for (var i = 0; i < gridLines.length; i++) {
                 if (x % gridLines[i].spacing === 0) {
-                    console.log(gridLines[i].strokeStyle);
                     drawHorizontalGridLine(x, gridLines[i].strokeStyle, canvas);
                     break;
                 }
@@ -76,6 +90,7 @@ canvas.addEventListener('mousemove', function (evt) {
     var mousePos = getMousePos(canvas, evt);
     var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
     writeMessage(canvas, message);
+    highlightPoint(canvas, mousePos.x, mousePos.y);
 }, false);
 
 window.onload = function() {
